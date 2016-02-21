@@ -144,6 +144,23 @@ class KakaoRestApi
     }
   end
 
+  def upload_multi(access_token, file_paths)
+    authorization = "Bearer #{access_token}"
+    content_type = 'multipart/form-data; boundary=---------------------------012345678901234567890123456'
+
+    files = []
+    file_paths.each do |path|
+      files << File.new(path, 'rb')
+    end
+
+    params = {
+      file: files,
+      multipart: true
+    }
+    request_url = 'https://kapi.kakao.com/v1/api/story/upload/multi'
+    RestClient.post(request_url, params, Authorization: authorization, content_type: content_type)
+  end
+
   private
 
   def story_write_note_post(required_params, options)
