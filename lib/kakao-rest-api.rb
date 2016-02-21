@@ -140,6 +140,34 @@ class KakaoRestApi
     end
   end
 
+  def my_story(access_token, story_id)
+    authorization = "Bearer #{access_token}"
+
+    request_url = "https://kapi.kakao.com/v1/api/story/mystory?id=#{story_id}"
+    RestClient.get(request_url, Authorization: authorization)
+  end
+
+  def my_stories(access_token, last_id)
+    authorization = "Bearer #{access_token}"
+
+    request_url = "https://kapi.kakao.com/v1/api/story/mystories?last_id=#{last_id}"
+    RestClient.get(request_url, Authorization: authorization)
+  end
+
+  def delete_my_story(access_token, id)
+    authorization = "Bearer #{access_token}"
+
+    request_url = "https://kapi.kakao.com/v1/api/story/delete/mystory?id=#{id}"
+    RestClient.delete(request_url, Authorization: authorization)
+  end
+
+  def talk_profile(access_token, secure_resource=false)
+    authorization = "Bearer #{access_token}"
+
+    request_url = 'https://kapi.kakao.com/v1/api/talk/profile'
+    RestClient.get(request_url, Authorization: authorization)
+  end
+
   def self.default_story_post_options
     # TODO. add app schemes
     {
