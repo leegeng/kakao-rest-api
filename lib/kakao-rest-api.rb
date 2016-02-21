@@ -21,7 +21,7 @@ class KakaoRestApi
     self.authorize_code = authorize_code
   end
 
-  def login(state=nil, encode_state=nil)
+  def login(state = nil, encode_state = nil)
     # raise ArgumentError 'required parameter is blank' if redirect_uri.blank?
     response_type = 'code'
     path = "/oauth/authorize?client_id=#{app_key}&redirect_uri=#{redirect_uri}&response_type=#{response_type}"
@@ -163,7 +163,7 @@ class KakaoRestApi
     RestClient.delete(request_url, Authorization: authorization)
   end
 
-  def talk_profile(access_token, secure_resource=false)
+  def talk_profile(access_token, secure_resource = false)
     authorization = "Bearer #{access_token}"
 
     request_url = "#{HOST_KAPI}/v1/api/talk/profile"
@@ -174,7 +174,7 @@ class KakaoRestApi
     # TODO. add app schemes
     {
       permission: 'A',
-      enable_share: false,
+      enable_share: false
     }
   end
 
