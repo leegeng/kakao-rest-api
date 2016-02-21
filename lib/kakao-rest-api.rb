@@ -130,7 +130,9 @@ class KakaoRestApi
     when STORY_POST_TYPE_NOTE
       story_write_note_post required_params, options
     when STORY_POST_TYPE_IMAGE
-
+      file_paths = required_params[:image_url_list]
+      required_params[:image_url_list] = upload_multi(access_token, file_paths)
+      story_write_photo_post required_params, options
     when STORY_POST_TYPE_LINK
 
     end
@@ -173,6 +175,21 @@ class KakaoRestApi
     params.merge!(options)
 
     request_url = 'https://kapi.kakao.com/v1/api/story/post/note'
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  def story_write_photo_post(required_params, options)
+    content = required_params[:content]
+    image_url_list = required_params[:image_url_list]
+    access_token = required_params[:access_token]
+    authorization = "Bearer #{access_token}"
+
+    params = {}
+    params[:content] = content || ''
+    params[:image_url_list] = image_url_list
+    params.merge!(options)
+
+    request_url = 'https://kapi.kakao.com/v1/api/story/post/photo'
     RestClient.post(request_url, params, Authorization: authorization)
   end
 end
