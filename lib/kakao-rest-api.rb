@@ -1,4 +1,5 @@
 require 'rest-client'
+require 'v1/user'
 
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
@@ -53,62 +54,31 @@ class KakaoRestApi
   end
 
   def logout(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/user/logout"
-    RestClient.post(request_url, nil, Authorization: authorization)
+    User.logout access_token
   end
 
   def signup(access_token, properties = {})
-    authorization = "Bearer #{access_token}"
-
-    query_params = {
-      properties: properties.to_json
-    }
-
-    request_url = "#{HOST_KAPI}/v1/user/signup"
-    RestClient.post(request_url, query_params, Authorization: authorization)
+    User.signup access_token, properties
   end
 
   def unlink(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/user/unlink"
-    RestClient.post(request_url, nil, Authorization: authorization)
+    User.unlink access_token
   end
 
   def me(access_token, property_keys = [], secure_resource = false)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/user/me"
-    RestClient.post(request_url, nil, Authorization: authorization)
+    User.me access_token, property_keys, secure_resource
   end
 
   def update_profile(access_token, props = {})
-    authorization = "Bearer #{access_token}"
-    params = {
-      properties: props.to_json
-    }
-    request_url = "#{HOST_KAPI}/v1/user/update_profile"
-    RestClient.post(request_url, params, Authorization: authorization)
+    User.update_profile access_token, props
   end
 
   def user_ids(limit = 100, from_id = 0, order = 'asc')
-    authorization = "KakaoAK #{admin_key}"
-    params = {}
-    params[:limit] = limit
-    params[:from_id] = from_id if from_id > 0
-    params[:order] = order
-
-    request_url = "#{HOST_KAPI}/v1/user/ids"
-    RestClient.post(request_url, params, Authorization: authorization)
+    User.ids admin_key, limit, from_id, order
   end
 
   def access_token_info(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/user/access_token_info"
-    RestClient.get(request_url, Authorization: authorization)
+    User.access_token_info access_token
   end
 
   def is_story_user?(access_token)
