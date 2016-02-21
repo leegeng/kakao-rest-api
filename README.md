@@ -1,6 +1,4 @@
 # kakao-rest-api - Simple Kakao platform REST API client for Ruby
-[![Gem Downloads](https://img.shields.io/gem/dt/rails.svg)](https://rubygems.org/gems/kakao-rest-api)
-[![Gem Version](https://badge.fury.io/rb/gem-release.png)](https://rubygems.org/gems/kakao-rest-api)
 
 ## Overview
 https://developers.kakao.com 의 REST API 를 쉽게 사용하기 위한 Ruby Gem 입니다.
