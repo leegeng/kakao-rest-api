@@ -3,6 +3,10 @@ require 'rest-client'
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
 
+  STORY_POST_TYPE_NOTE = 0
+  STORY_POST_TYPE_IMAGE = 1
+  STORY_POST_TYPE_LINK = 2
+
   def initialize(app_key, admin_key, redirect_uri)
     # raise ArgumentError 'required parameter is blank' if app_key.blank? || admin_key.blank?
     self.app_key = app_key
@@ -117,5 +121,41 @@ class KakaoRestApi
 
     request_url = 'https://kapi.kakao.com/v1/api/story/profile'
     RestClient.get(request_url, Authorization: authorization)
+  end
+
+  def story_write_post(access_token, type, required_params, options = {})
+    required_params[:access_token] = access_token
+
+    case type
+    when STORY_POST_TYPE_NOTE
+      story_write_note_post required_params, options
+    when STORY_POST_TYPE_IMAGE
+
+    when STORY_POST_TYPE_LINK
+
+    end
+  end
+
+  def self.default_story_post_options
+    # TODO. add app schemes
+    {
+      permission: 'A',
+      enable_share: false,
+    }
+  end
+
+  private
+
+  def story_write_note_post(required_params, options)
+    content = required_params[:content]
+    access_token = required_params[:access_token]
+    authorization = "Bearer #{access_token}"
+
+    params = {}
+    params[:content] = content
+    params.merge!(options)
+
+    request_url = 'https://kapi.kakao.com/v1/api/story/post/note'
+    RestClient.post(request_url, params, Authorization: authorization)
   end
 end
