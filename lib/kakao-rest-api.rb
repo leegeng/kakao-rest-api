@@ -70,4 +70,52 @@ class KakaoRestApi
     request_url = 'https://kapi.kakao.com/v1/user/unlink'
     RestClient.post(request_url, nil, Authorization: authorization)
   end
+
+  def me(access_token, property_keys = [], secure_resource = false)
+    authorization = "Bearer #{access_token}"
+
+    request_url = 'https://kapi.kakao.com/v1/user/me'
+    RestClient.post(request_url, nil, Authorization: authorization)
+  end
+
+  def update_profile(access_token, props = {})
+    authorization = "Bearer #{access_token}"
+    params = {
+      properties: props.to_json
+    }
+    request_url = 'https://kapi.kakao.com/v1/user/update_profile'
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  def user_ids(limit = 100, from_id = 0, order = 'asc')
+    authorization = "KakaoAK #{admin_key}"
+    params = {}
+    params[:limit] = limit
+    params[:from_id] = from_id if from_id > 0
+    params[:order] = order
+
+    request_url = 'https://kapi.kakao.com/v1/user/ids'
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  def access_token_info(access_token)
+    authorization = "Bearer #{access_token}"
+
+    request_url = 'https://kapi.kakao.com/v1/user/access_token_info'
+    RestClient.get(request_url, Authorization: authorization)
+  end
+
+  def is_story_user?(access_token)
+    authorization = "Bearer #{access_token}"
+
+    request_url = 'https://kapi.kakao.com/v1/api/story/isstoryuser'
+    RestClient.get(request_url, Authorization: authorization)
+  end
+
+  def story_profile(access_token, secure_resource = false)
+    authorization = "Bearer #{access_token}"
+
+    request_url = 'https://kapi.kakao.com/v1/api/story/profile'
+    RestClient.get(request_url, Authorization: authorization)
+  end
 end
