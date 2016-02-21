@@ -134,7 +134,9 @@ class KakaoRestApi
       required_params[:image_url_list] = upload_multi(access_token, file_paths)
       story_write_photo_post required_params, options
     when STORY_POST_TYPE_LINK
-
+      url = required_params[:url]
+      required_params[:link_info] = link_info(access_token, url)
+      story_write_link_post required_params, options
     end
   end
 
@@ -161,6 +163,13 @@ class KakaoRestApi
     }
     request_url = 'https://kapi.kakao.com/v1/api/story/upload/multi'
     RestClient.post(request_url, params, Authorization: authorization, content_type: content_type)
+  end
+
+  def link_info(access_token, url)
+    authorization = "Bearer #{access_token}"
+
+    request_url = "https://kapi.kakao.com/v1/api/story/linkinfo?url=#{url}"
+    RestClient.get(request_url, Authorization: authorization)
   end
 
   private
@@ -190,6 +199,21 @@ class KakaoRestApi
     params.merge!(options)
 
     request_url = 'https://kapi.kakao.com/v1/api/story/post/photo'
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  def story_write_link_post(required_params, options)
+    link_info = required_params[:link_info]
+    content = required_params[:content]
+    access_token = required_params[:access_token]
+    authorization = "Bearer #{access_token}"
+
+    params = {}
+    params[:content] = content || ''
+    params[:link_info] = link_info
+    params.merge!(options)
+
+    request_url = 'https://kapi.kakao.com/v1/api/story/post/link'
     RestClient.post(request_url, params, Authorization: authorization)
   end
 end
