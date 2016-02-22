@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = 'Simple Kakao platform REST API client for Ruby'
   s.authors = ['Kyoungwon Lee']
   s.email = 'kyoungwon.lee86@gmail.com'
-  s.files = Dir['lib/*.rb', 'lib/v1/*.rb']
+  s.files = Dir['lib/*.rb', 'lib/v1/*.rb', 'lib/v1/api/*.rb']
   s.homepage = 'http://rubygems.org/gems/kakao-rest-api'
   s.license = 'MIT'
 

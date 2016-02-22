@@ -1,5 +1,7 @@
 require 'rest-client'
 require 'v1/user'
+require 'v1/api/story'
+require 'v1/api/talk'
 
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
@@ -82,138 +84,56 @@ class KakaoRestApi
   end
 
   def is_story_user?(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/story/isstoryuser"
-    RestClient.get(request_url, Authorization: authorization)
+    Story.is_story_user? access_token
   end
 
   def story_profile(access_token, secure_resource = false)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/story/profile"
-    RestClient.get(request_url, Authorization: authorization)
+    Story.story_profile access_token, secure_resource
   end
 
-  def story_write_post(access_token, type, required_params, options = {})
+  def story_post(access_token, type, required_params, options = {})
     required_params[:access_token] = access_token
 
     case type
     when STORY_POST_TYPE_NOTE
-      story_write_note_post required_params, options
+      Story.post_note required_params, options
     when STORY_POST_TYPE_IMAGE
       file_paths = required_params[:image_url_list]
       required_params[:image_url_list] = upload_multi(access_token, file_paths)
-      story_write_photo_post required_params, options
+      Story.post_photo required_params, options
     when STORY_POST_TYPE_LINK
       url = required_params[:url]
       required_params[:link_info] = link_info(access_token, url)
-      story_write_link_post required_params, options
+      Story.post_link required_params, options
     end
   end
 
   def my_story(access_token, story_id)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/story/mystory?id=#{story_id}"
-    RestClient.get(request_url, Authorization: authorization)
+    Story.my_story access_token, story_id
   end
 
   def my_stories(access_token, last_id)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/story/mystories?last_id=#{last_id}"
-    RestClient.get(request_url, Authorization: authorization)
+    Story.my_stories access_token, last_id
   end
 
   def delete_my_story(access_token, id)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/story/delete/mystory?id=#{id}"
-    RestClient.delete(request_url, Authorization: authorization)
+    Story.delete_my_story access_token, id
   end
 
   def talk_profile(access_token, secure_resource = false)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/talk/profile"
-    RestClient.get(request_url, Authorization: authorization)
-  end
-
-  def self.default_story_post_options
-    # TODO. add app schemes
-    {
-      permission: 'A',
-      enable_share: false
-    }
+    Talk.talk_profile access_token, secure_resource
   end
 
   def upload_multi(access_token, file_paths)
-    authorization = "Bearer #{access_token}"
-    content_type = 'multipart/form-data; boundary=---------------------------012345678901234567890123456'
-
     files = []
     file_paths.each do |path|
       files << File.new(path, 'rb')
     end
 
-    params = {
-      file: files,
-      multipart: true
-    }
-    request_url = "#{HOST_KAPI}/v1/api/story/upload/multi"
-    RestClient.post(request_url, params, Authorization: authorization, content_type: content_type)
+    Story.upload_multi access_token, files
   end
 
   def link_info(access_token, url)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "#{HOST_KAPI}/v1/api/story/linkinfo?url=#{url}"
-    RestClient.get(request_url, Authorization: authorization)
-  end
-
-  private
-
-  def story_write_note_post(required_params, options)
-    content = required_params[:content]
-    access_token = required_params[:access_token]
-    authorization = "Bearer #{access_token}"
-
-    params = {}
-    params[:content] = content
-    params.merge!(options)
-
-    request_url = "#{HOST_KAPI}/v1/api/story/post/note"
-    RestClient.post(request_url, params, Authorization: authorization)
-  end
-
-  def story_write_photo_post(required_params, options)
-    content = required_params[:content]
-    image_url_list = required_params[:image_url_list]
-    access_token = required_params[:access_token]
-    authorization = "Bearer #{access_token}"
-
-    params = {}
-    params[:content] = content || ''
-    params[:image_url_list] = image_url_list
-    params.merge!(options)
-
-    request_url = "#{HOST_KAPI}/v1/api/story/post/photo"
-    RestClient.post(request_url, params, Authorization: authorization)
-  end
-
-  def story_write_link_post(required_params, options)
-    link_info = required_params[:link_info]
-    content = required_params[:content]
-    access_token = required_params[:access_token]
-    authorization = "Bearer #{access_token}"
-
-    params = {}
-    params[:content] = content || ''
-    params[:link_info] = link_info
-    params.merge!(options)
-
-    request_url = "#{HOST_KAPI}/v1/api/story/post/link"
-    RestClient.post(request_url, params, Authorization: authorization)
+    Story.link_info access_token, url
   end
 end
