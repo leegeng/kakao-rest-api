@@ -27,11 +27,19 @@ class User
     RestClient.post(request_url, nil, Authorization: authorization)
   end
 
-  def self.me(access_token, property_keys = [], secure_resource = false)
+  def self.me(access_token, property_keys = [], secure_resource = false, user_id = 0)
     authorization = "Bearer #{access_token}"
+    params = {
+      propertyKeys: property_keys,
+      secure_resource: secure_resource
+    }
+    if user_id > 0
+      params[:target_id_type] = 'user_id'
+      params[:target_id] = user_id
+    end
 
     request_url = "#{HOST_KAPI}/v1/user/me"
-    RestClient.post(request_url, nil, Authorization: authorization)
+    RestClient.post(request_url, params, Authorization: authorization)
   end
 
   def self.update_profile(access_token, props = {})

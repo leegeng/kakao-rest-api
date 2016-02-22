@@ -5,12 +5,11 @@ require 'v1/api/talk'
 
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
-  
+
   HOST_KAUTH = 'https://kauth.kakao.com'
   HOST_KAPI = 'https://kapi.kakao.com'
 
   def initialize(app_key, admin_key, redirect_uri)
-    # raise ArgumentError 'required parameter is blank' if app_key.blank? || admin_key.blank?
     self.app_key = app_key
     self.admin_key = admin_key
     self.redirect_uri = redirect_uri
@@ -20,10 +19,17 @@ class KakaoRestApi
     self.authorize_code = authorize_code
   end
 
-  def login(state = nil, encode_state = nil)
-    # raise ArgumentError 'required parameter is blank' if redirect_uri.blank?
+  def login(state = nil, encode_state = false)
     response_type = 'code'
     path = "/oauth/authorize?client_id=#{app_key}&redirect_uri=#{redirect_uri}&response_type=#{response_type}"
+
+    unless state.nil?
+      path.concat("&state=#{state}")
+    end
+
+    if encode_state
+      path.concat('&encode_state=true')
+    end
 
     "#{HOST_KAUTH}#{path}"
   end
