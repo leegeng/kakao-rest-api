@@ -1,14 +1,15 @@
 require 'rest-client'
+require 'v1/user'
+require 'v1/api/story'
+require 'v1/api/talk'
 
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
 
-  STORY_POST_TYPE_NOTE = 0
-  STORY_POST_TYPE_IMAGE = 1
-  STORY_POST_TYPE_LINK = 2
+  HOST_KAUTH = 'https://kauth.kakao.com'.freeze
+  HOST_KAPI = 'https://kapi.kakao.com'.freeze
 
   def initialize(app_key, admin_key, redirect_uri)
-    # raise ArgumentError 'required parameter is blank' if app_key.blank? || admin_key.blank?
     self.app_key = app_key
     self.admin_key = admin_key
     self.redirect_uri = redirect_uri
@@ -18,13 +19,13 @@ class KakaoRestApi
     self.authorize_code = authorize_code
   end
 
-  def login(state=nil, encode_state=nil)
-    # raise ArgumentError 'required parameter is blank' if redirect_uri.blank?
+  def login(state = nil, encode_state = false)
     response_type = 'code'
-    host = 'https://kauth.kakao.com'
     path = "/oauth/authorize?client_id=#{app_key}&redirect_uri=#{redirect_uri}&response_type=#{response_type}"
+    path.concat("&state=#{state}") unless state.nil?
+    path.concat('&encode_state=true') if encode_state
 
-    "#{host}#{path}"
+    "#{HOST_KAUTH}#{path}"
   end
 
   def token
@@ -34,8 +35,7 @@ class KakaoRestApi
       redirect_uri: redirect_uri,
       code: authorize_code
     }
-    
-    request_url = 'https://kauth.kakao.com/oauth/token'
+    request_url = "#{HOST_KAUTH}/oauth/token"
     RestClient.post(request_url, query_params)
   end
 
@@ -45,203 +45,89 @@ class KakaoRestApi
       client_id: app_key,
       refresh_token: refresh_token
     }
-
-    request_url = 'https://kauth.kakao.com/oauth/token'
+    request_url = "#{HOST_KAUTH}/oauth/token"
     RestClient.post(request_url, query_params)
   end
 
   def logout(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/user/logout'
-    RestClient.post(request_url, nil, Authorization: authorization)
+    User.logout access_token
   end
 
   def signup(access_token, properties = {})
-    authorization = "Bearer #{access_token}"
-
-    query_params = {
-      properties: properties.to_json
-    }
-
-    request_url = 'https://kapi.kakao.com/v1/user/signup'
-    RestClient.post(request_url, query_params, Authorization: authorization)
+    User.signup access_token, properties
   end
 
   def unlink(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/user/unlink'
-    RestClient.post(request_url, nil, Authorization: authorization)
+    User.unlink access_token
   end
 
   def me(access_token, property_keys = [], secure_resource = false)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/user/me'
-    RestClient.post(request_url, nil, Authorization: authorization)
+    User.me access_token, property_keys, secure_resource
   end
 
   def update_profile(access_token, props = {})
-    authorization = "Bearer #{access_token}"
-    params = {
-      properties: props.to_json
-    }
-    request_url = 'https://kapi.kakao.com/v1/user/update_profile'
-    RestClient.post(request_url, params, Authorization: authorization)
+    User.update_profile access_token, props
   end
 
   def user_ids(limit = 100, from_id = 0, order = 'asc')
-    authorization = "KakaoAK #{admin_key}"
-    params = {}
-    params[:limit] = limit
-    params[:from_id] = from_id if from_id > 0
-    params[:order] = order
-
-    request_url = 'https://kapi.kakao.com/v1/user/ids'
-    RestClient.post(request_url, params, Authorization: authorization)
+    User.ids admin_key, limit, from_id, order
   end
 
   def access_token_info(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/user/access_token_info'
-    RestClient.get(request_url, Authorization: authorization)
+    User.access_token_info access_token
   end
 
   def is_story_user?(access_token)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/api/story/isstoryuser'
-    RestClient.get(request_url, Authorization: authorization)
+    Story.story_user? access_token
   end
 
   def story_profile(access_token, secure_resource = false)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/api/story/profile'
-    RestClient.get(request_url, Authorization: authorization)
+    Story.story_profile access_token, secure_resource
   end
 
-  def story_write_post(access_token, type, required_params, options = {})
+  def story_post(access_token, type, required_params, options = {})
     required_params[:access_token] = access_token
 
     case type
-    when STORY_POST_TYPE_NOTE
-      story_write_note_post required_params, options
-    when STORY_POST_TYPE_IMAGE
+    when Story::POST_TYPE_NOTE
+      Story.post_note required_params, options
+    when Story::POST_TYPE_IMAGE
       file_paths = required_params[:image_url_list]
       required_params[:image_url_list] = upload_multi(access_token, file_paths)
-      story_write_photo_post required_params, options
-    when STORY_POST_TYPE_LINK
+      Story.post_photo required_params, options
+    when Story::POST_TYPE_LINK
       url = required_params[:url]
       required_params[:link_info] = link_info(access_token, url)
-      story_write_link_post required_params, options
+      Story.post_link required_params, options
     end
   end
 
   def my_story(access_token, story_id)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "https://kapi.kakao.com/v1/api/story/mystory?id=#{story_id}"
-    RestClient.get(request_url, Authorization: authorization)
+    Story.my_story access_token, story_id
   end
 
   def my_stories(access_token, last_id)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "https://kapi.kakao.com/v1/api/story/mystories?last_id=#{last_id}"
-    RestClient.get(request_url, Authorization: authorization)
+    Story.my_stories access_token, last_id
   end
 
   def delete_my_story(access_token, id)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "https://kapi.kakao.com/v1/api/story/delete/mystory?id=#{id}"
-    RestClient.delete(request_url, Authorization: authorization)
+    Story.delete_my_story access_token, id
   end
 
-  def talk_profile(access_token, secure_resource=false)
-    authorization = "Bearer #{access_token}"
-
-    request_url = 'https://kapi.kakao.com/v1/api/talk/profile'
-    RestClient.get(request_url, Authorization: authorization)
-  end
-
-  def self.default_story_post_options
-    # TODO. add app schemes
-    {
-      permission: 'A',
-      enable_share: false,
-    }
+  def talk_profile(access_token, secure_resource = false)
+    Talk.talk_profile access_token, secure_resource
   end
 
   def upload_multi(access_token, file_paths)
-    authorization = "Bearer #{access_token}"
-    content_type = 'multipart/form-data; boundary=---------------------------012345678901234567890123456'
-
     files = []
     file_paths.each do |path|
       files << File.new(path, 'rb')
     end
 
-    params = {
-      file: files,
-      multipart: true
-    }
-    request_url = 'https://kapi.kakao.com/v1/api/story/upload/multi'
-    RestClient.post(request_url, params, Authorization: authorization, content_type: content_type)
+    Story.upload_multi access_token, files
   end
 
   def link_info(access_token, url)
-    authorization = "Bearer #{access_token}"
-
-    request_url = "https://kapi.kakao.com/v1/api/story/linkinfo?url=#{url}"
-    RestClient.get(request_url, Authorization: authorization)
-  end
-
-  private
-
-  def story_write_note_post(required_params, options)
-    content = required_params[:content]
-    access_token = required_params[:access_token]
-    authorization = "Bearer #{access_token}"
-
-    params = {}
-    params[:content] = content
-    params.merge!(options)
-
-    request_url = 'https://kapi.kakao.com/v1/api/story/post/note'
-    RestClient.post(request_url, params, Authorization: authorization)
-  end
-
-  def story_write_photo_post(required_params, options)
-    content = required_params[:content]
-    image_url_list = required_params[:image_url_list]
-    access_token = required_params[:access_token]
-    authorization = "Bearer #{access_token}"
-
-    params = {}
-    params[:content] = content || ''
-    params[:image_url_list] = image_url_list
-    params.merge!(options)
-
-    request_url = 'https://kapi.kakao.com/v1/api/story/post/photo'
-    RestClient.post(request_url, params, Authorization: authorization)
-  end
-
-  def story_write_link_post(required_params, options)
-    link_info = required_params[:link_info]
-    content = required_params[:content]
-    access_token = required_params[:access_token]
-    authorization = "Bearer #{access_token}"
-
-    params = {}
-    params[:content] = content || ''
-    params[:link_info] = link_info
-    params.merge!(options)
-
-    request_url = 'https://kapi.kakao.com/v1/api/story/post/link'
-    RestClient.post(request_url, params, Authorization: authorization)
+    Story.link_info access_token, url
   end
 end
