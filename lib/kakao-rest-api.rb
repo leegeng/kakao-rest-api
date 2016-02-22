@@ -6,8 +6,8 @@ require 'v1/api/talk'
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
 
-  HOST_KAUTH = 'https://kauth.kakao.com'
-  HOST_KAPI = 'https://kapi.kakao.com'
+  HOST_KAUTH = 'https://kauth.kakao.com'.freeze
+  HOST_KAPI = 'https://kapi.kakao.com'.freeze
 
   def initialize(app_key, admin_key, redirect_uri)
     self.app_key = app_key
@@ -22,14 +22,8 @@ class KakaoRestApi
   def login(state = nil, encode_state = false)
     response_type = 'code'
     path = "/oauth/authorize?client_id=#{app_key}&redirect_uri=#{redirect_uri}&response_type=#{response_type}"
-
-    unless state.nil?
-      path.concat("&state=#{state}")
-    end
-
-    if encode_state
-      path.concat('&encode_state=true')
-    end
+    path.concat("&state=#{state}") unless state.nil?
+    path.concat('&encode_state=true') if encode_state
 
     "#{HOST_KAUTH}#{path}"
   end
@@ -41,7 +35,6 @@ class KakaoRestApi
       redirect_uri: redirect_uri,
       code: authorize_code
     }
-    
     request_url = "#{HOST_KAUTH}/oauth/token"
     RestClient.post(request_url, query_params)
   end
@@ -52,7 +45,6 @@ class KakaoRestApi
       client_id: app_key,
       refresh_token: refresh_token
     }
-
     request_url = "#{HOST_KAUTH}/oauth/token"
     RestClient.post(request_url, query_params)
   end
@@ -86,7 +78,7 @@ class KakaoRestApi
   end
 
   def is_story_user?(access_token)
-    Story.is_story_user? access_token
+    Story.story_user? access_token
   end
 
   def story_profile(access_token, secure_resource = false)

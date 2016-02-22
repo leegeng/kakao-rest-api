@@ -1,6 +1,6 @@
 class User
-  HOST_KAUTH = 'https://kauth.kakao.com'
-  HOST_KAPI = 'https://kapi.kakao.com'
+  HOST_KAUTH = 'https://kauth.kakao.com'.freeze
+  HOST_KAPI = 'https://kapi.kakao.com'.freeze
 
   def self.logout(access_token)
     authorization = "Bearer #{access_token}"

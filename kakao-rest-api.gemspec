@@ -13,4 +13,3 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.0.0'
   s.add_runtime_dependency 'rest-client', '~> 1.8', '~> 1.8.0'
 end
-

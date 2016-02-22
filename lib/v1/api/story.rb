@@ -3,10 +3,10 @@ class Story
   POST_TYPE_IMAGE = 1
   POST_TYPE_LINK = 2
 
-  HOST_KAUTH = 'https://kauth.kakao.com'
-  HOST_KAPI = 'https://kapi.kakao.com'
+  HOST_KAUTH = 'https://kauth.kakao.com'.freeze
+  HOST_KAPI = 'https://kapi.kakao.com'.freeze
 
-  def self.is_story_user?(access_token)
+  def self.story_user?(access_token)
     authorization = "Bearer #{access_token}"
 
     request_url = "#{HOST_KAPI}/v1/api/story/isstoryuser"
@@ -61,8 +61,8 @@ class Story
     content_type = 'multipart/form-data; boundary=---------------------------012345678901234567890123456'
 
     params = {
-        file: files,
-        multipart: true
+      file: files,
+      multipart: true
     }
     request_url = "#{HOST_KAPI}/v1/api/story/upload/multi"
     RestClient.post(request_url, params, Authorization: authorization, content_type: content_type)
