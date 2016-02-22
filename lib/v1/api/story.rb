@@ -17,6 +17,7 @@ class Story
     authorization = "Bearer #{access_token}"
 
     request_url = "#{HOST_KAPI}/v1/api/story/profile"
+    request_url.concat('?secure_resource=true') if secure_resource
     RestClient.get(request_url, Authorization: authorization)
   end
 
@@ -42,10 +43,9 @@ class Story
   end
 
   def self.default_story_post_options
-    # TODO. add app schemes
     {
-        permission: 'A',
-        enable_share: false
+      permission: 'A',
+      enable_share: false
     }
   end
 
@@ -82,7 +82,7 @@ class Story
   end
 
   def self.post_photo(required_params, options)
-    content = required_params[:content]
+    content = options[:content]
     image_url_list = required_params[:image_url_list]
     access_token = required_params[:access_token]
     authorization = "Bearer #{access_token}"
@@ -98,7 +98,7 @@ class Story
 
   def self.post_link(required_params, options)
     link_info = required_params[:link_info]
-    content = required_params[:content]
+    content = options[:content]
     access_token = required_params[:access_token]
     authorization = "Bearer #{access_token}"
 
