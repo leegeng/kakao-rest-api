@@ -1,4 +1,11 @@
 class Story
+  STORY_POST_TYPE_NOTE = 0
+  STORY_POST_TYPE_IMAGE = 1
+  STORY_POST_TYPE_LINK = 2
+
+  HOST_KAUTH = 'https://kauth.kakao.com'
+  HOST_KAPI = 'https://kapi.kakao.com'
+
   def self.is_story_user?(access_token)
     authorization = "Bearer #{access_token}"
 

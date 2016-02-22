@@ -1,4 +1,7 @@
 class Talk
+  HOST_KAUTH = 'https://kauth.kakao.com'
+  HOST_KAPI = 'https://kapi.kakao.com'
+
   def self.talk_profile(access_token, secure_resource = false)
     authorization = "Bearer #{access_token}"
 
