@@ -1,7 +1,7 @@
 class Story
-  STORY_POST_TYPE_NOTE = 0
-  STORY_POST_TYPE_IMAGE = 1
-  STORY_POST_TYPE_LINK = 2
+  POST_TYPE_NOTE = 0
+  POST_TYPE_IMAGE = 1
+  POST_TYPE_LINK = 2
 
   HOST_KAUTH = 'https://kauth.kakao.com'
   HOST_KAPI = 'https://kapi.kakao.com'

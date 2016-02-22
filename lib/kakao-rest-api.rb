@@ -5,11 +5,7 @@ require 'v1/api/talk'
 
 class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
-
-  STORY_POST_TYPE_NOTE = 0
-  STORY_POST_TYPE_IMAGE = 1
-  STORY_POST_TYPE_LINK = 2
-
+  
   HOST_KAUTH = 'https://kauth.kakao.com'
   HOST_KAPI = 'https://kapi.kakao.com'
 
@@ -95,13 +91,13 @@ class KakaoRestApi
     required_params[:access_token] = access_token
 
     case type
-    when STORY_POST_TYPE_NOTE
+    when Story::POST_TYPE_NOTE
       Story.post_note required_params, options
-    when STORY_POST_TYPE_IMAGE
+    when Story::POST_TYPE_IMAGE
       file_paths = required_params[:image_url_list]
       required_params[:image_url_list] = upload_multi(access_token, file_paths)
       Story.post_photo required_params, options
-    when STORY_POST_TYPE_LINK
+    when Story::POST_TYPE_LINK
       url = required_params[:url]
       required_params[:link_info] = link_info(access_token, url)
       Story.post_link required_params, options
