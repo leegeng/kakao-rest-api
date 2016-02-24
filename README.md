@@ -1,6 +1,6 @@
 # kakao_rest_api - Simple Kakao platform REST API client for Ruby
 [![Gem Version](https://badge.fury.io/rb/kakao_rest_api.svg)](https://badge.fury.io/rb/kakao_rest_api)
-[![Build Status](https://travis-ci.org/leegeng/kakao_rest_api.svg?branch=master)](https://travis-ci.org/leegeng/kakao-rest-api)
+[![Build Status](https://travis-ci.org/leegeng/kakao-rest-api.svg?branch=master)](https://travis-ci.org/leegeng/kakao-rest-api)
 [![Gem](https://img.shields.io/gem/dt/kakao_rest_api.svg)](https://rubygems.org/gems/kakao_rest_api/)
 
 ## Overview
