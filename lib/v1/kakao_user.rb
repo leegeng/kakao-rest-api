@@ -1,4 +1,4 @@
-class User
+class KakaoUser
   HOST_KAUTH = 'https://kauth.kakao.com'.freeze
   HOST_KAPI = 'https://kapi.kakao.com'.freeze
 

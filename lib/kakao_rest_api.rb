@@ -1,5 +1,5 @@
 require 'rest-client'
-require 'v1/user'
+require 'v1/kakao_user'
 require 'v1/api/story'
 require 'v1/api/talk'
 
@@ -50,31 +50,31 @@ class KakaoRestApi
   end
 
   def logout(access_token)
-    User.logout access_token
+    KakaoUser.logout access_token
   end
 
   def signup(access_token, properties = {})
-    User.signup access_token, properties
+    KakaoUser.signup access_token, properties
   end
 
   def unlink(access_token)
-    User.unlink access_token
+    KakaoUser.unlink access_token
   end
 
   def me(access_token, property_keys = [], secure_resource = false)
-    User.me access_token, property_keys, secure_resource
+    KakaoUser.me access_token, property_keys, secure_resource
   end
 
   def update_profile(access_token, props = {})
-    User.update_profile access_token, props
+    KakaoUser.update_profile access_token, props
   end
 
   def user_ids(limit = 100, from_id = 0, order = 'asc')
-    User.ids admin_key, limit, from_id, order
+    KakaoUser.ids admin_key, limit, from_id, order
   end
 
   def access_token_info(access_token)
-    User.access_token_info access_token
+    KakaoUser.access_token_info access_token
   end
 
   def is_story_user?(access_token)

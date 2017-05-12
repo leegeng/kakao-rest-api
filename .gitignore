@@ -36,3 +36,4 @@ build/
 .rvmrc
 kakao-rest-api.iml
 uiDesigner.xml
+.idea
