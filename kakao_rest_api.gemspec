@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'kakao_rest_api'
-  s.version = '0.9.4'
+  s.version = '0.9.5'
   s.date = '2016-02-20'
   s.summary = 'Simple Kakao platform REST API client for Ruby'
   s.description = 'Simple Kakao platform REST API client for Ruby'
@@ -11,5 +11,5 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
 
   s.required_ruby_version = '>= 2.0.0'
-  s.add_runtime_dependency 'rest-client', '~> 1.8', '~> 1.8.0'
+  s.add_runtime_dependency 'rest-client', '~> 2.0', '~> 2.0.0'
 end
