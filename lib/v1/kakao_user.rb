@@ -58,8 +58,8 @@ class KakaoUser
     params[:from_id] = from_id if from_id > 0
     params[:order] = order
 
-    request_url = "#{HOST_KAPI}/v1/user/ids?#{params.map{|k,v| "#{k}=#{v}"} * '&' }"
-    RestClient.get(request_url, Authorization: authorization)
+    request_url = "#{HOST_KAPI}/v1/user/ids"
+    RestClient.post(request_url, params, Authorization: authorization)
   end
 
   def self.access_token_info(access_token)

@@ -7,11 +7,11 @@ class KakaoRestApi
   attr_accessor :app_key, :admin_key, :authorize_code, :redirect_uri
 
   HOST_KAUTH = 'https://kauth.kakao.com'.freeze
-  HOST_KAPI  = 'https://kapi.kakao.com'.freeze
+  HOST_KAPI = 'https://kapi.kakao.com'.freeze
 
   def initialize(app_key, admin_key, redirect_uri)
-    self.app_key      = app_key
-    self.admin_key    = admin_key
+    self.app_key = app_key
+    self.admin_key = admin_key
     self.redirect_uri = redirect_uri
   end
 
@@ -21,7 +21,7 @@ class KakaoRestApi
 
   def login(state = nil, encode_state = false)
     response_type = 'code'
-    path          = "/oauth/authorize?client_id=#{app_key}&redirect_uri=#{redirect_uri}&response_type=#{response_type}"
+    path = "/oauth/authorize?client_id=#{app_key}&redirect_uri=#{redirect_uri}&response_type=#{response_type}"
     path.concat("&state=#{state}") unless state.nil?
     path.concat('&encode_state=true') if encode_state
 
@@ -30,22 +30,22 @@ class KakaoRestApi
 
   def token
     query_params = {
-      grant_type:   'authorization_code',
-      client_id:    app_key,
+      grant_type: 'authorization_code',
+      client_id: app_key,
       redirect_uri: redirect_uri,
-      code:         authorize_code
+      code: authorize_code
     }
-    request_url  = "#{HOST_KAUTH}/oauth/token"
+    request_url = "#{HOST_KAUTH}/oauth/token"
     RestClient.post(request_url, query_params)
   end
 
   def refresh_token(refresh_token)
     query_params = {
-      grant_type:    'refresh_token',
-      client_id:     app_key,
+      grant_type: 'refresh_token',
+      client_id: app_key,
       refresh_token: refresh_token
     }
-    request_url  = "#{HOST_KAUTH}/oauth/token"
+    request_url = "#{HOST_KAUTH}/oauth/token"
     RestClient.post(request_url, query_params)
   end
 
@@ -63,19 +63,6 @@ class KakaoRestApi
 
   def me(access_token, property_keys = [], secure_resource = false)
     KakaoUser.me access_token, property_keys, secure_resource
-  end
-
-  def me_with_admin(user_id, property_keys = [], secure_resource = true)
-    authorization = "KakaoAK #{admin_key}"
-    params        = {
-      propertyKeys:    property_keys,
-      secure_resource: secure_resource,
-      target_id_type:  'user_id',
-      target_id:       user_id
-    }
-
-    request_url = "#{HOST_KAPI}/v1/user/me"
-    RestClient.post(request_url, params, Authorization: authorization)
   end
 
   def update_profile(access_token, props = {})
@@ -105,11 +92,11 @@ class KakaoRestApi
     when Story::POST_TYPE_NOTE
       Story.post_note required_params, options
     when Story::POST_TYPE_IMAGE
-      file_paths                       = required_params[:image_url_list]
+      file_paths = required_params[:image_url_list]
       required_params[:image_url_list] = upload_multi(access_token, file_paths)
       Story.post_photo required_params, options
     when Story::POST_TYPE_LINK
-      url                         = required_params[:url]
+      url = required_params[:url]
       required_params[:link_info] = link_info(access_token, url)
       Story.post_link required_params, options
     end
