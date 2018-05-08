@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'kakao_rest_api'
-  s.version = '0.9.7'
+  s.version = '0.9.8'
   s.date = '2018-05-08'
   s.summary = 'Simple Kakao platform REST API client for Ruby'
   s.description = 'Simple Kakao platform REST API client for Ruby'
