@@ -61,8 +61,16 @@ class KakaoRestApi
     KakaoUser.unlink access_token
   end
 
+  def unlink_with_admin(user_id)
+    KakaoUser.unlink_with_admin admin_key, user_id
+  end
+
   def me(access_token, property_keys = [], secure_resource = false)
     KakaoUser.me access_token, property_keys, secure_resource
+  end
+
+  def me_with_admin(user_id, property_keys = [], secure_resource = false)
+    KakaoUser.me_with_admin admin_key, user_id, property_keys, secure_resource
   end
 
   def update_profile(access_token, props = {})
