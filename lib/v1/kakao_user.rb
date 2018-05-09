@@ -27,6 +27,15 @@ class KakaoUser
     RestClient.post(request_url, nil, Authorization: authorization)
   end
 
+  # https://developers.kakao.com/docs/restapi/user-management#앱-연결-해제
+  def self.unlink_with_admin(admin_key, user_id)
+    authorization = "KakaoAK #{admin_key}"
+
+    request_url = "#{HOST_KAPI}/v1/user/unlink"
+    params = { target_id_type: 'user_id', target_id: user_id }
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
   def self.me(access_token, property_keys = [], secure_resource = false, user_id = 0)
     authorization = "Bearer #{access_token}"
     params = {
