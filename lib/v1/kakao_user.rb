@@ -36,16 +36,26 @@ class KakaoUser
     RestClient.post(request_url, params, Authorization: authorization)
   end
 
-  def self.me(access_token, property_keys = [], secure_resource = false, user_id = 0)
+  def self.me(access_token, property_keys = [], secure_resource = false)
     authorization = "Bearer #{access_token}"
     params = {
       propertyKeys: property_keys,
       secure_resource: secure_resource
     }
-    if user_id > 0
-      params[:target_id_type] = 'user_id'
-      params[:target_id] = user_id
-    end
+
+    request_url = "#{HOST_KAPI}/v1/user/me"
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  # https://developers.kakao.com/docs/restapi/user-management#사용자-정보-요청
+  def self.me_with_admin(admin_key, user_id, property_keys = [], secure_resource = false)
+    authorization = "KakaoAK #{admin_key}"
+    params = {
+      target_id_type: 'user_id',
+      target_id: user_id,
+      propertyKeys: property_keys,
+      secure_resource: secure_resource,
+    }
 
     request_url = "#{HOST_KAPI}/v1/user/me"
     RestClient.post(request_url, params, Authorization: authorization)
