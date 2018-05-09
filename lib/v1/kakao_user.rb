@@ -53,12 +53,10 @@ class KakaoUser
 
   def self.ids(admin_key, limit = 100, from_id = 0, order = 'asc')
     authorization = "KakaoAK #{admin_key}"
-    params = {}
-    params[:limit] = limit
-    params[:from_id] = from_id if from_id > 0
-    params[:order] = order
-
-    request_url = "#{HOST_KAPI}/v1/user/ids?#{params.map{|k,v| "#{k}=#{v}"} * '&' }"
+    params = { limit: limit, order: order }
+    params[:from_id] = from_id if from_id.positive?
+l
+    request_url = "#{HOST_KAPI}/v1/user/ids?#{params.map { |k, v| "#{k}=#{v}" } * '&'}"
     RestClient.get(request_url, Authorization: authorization)
   end
 
