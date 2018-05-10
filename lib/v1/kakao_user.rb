@@ -27,16 +27,35 @@ class KakaoUser
     RestClient.post(request_url, nil, Authorization: authorization)
   end
 
-  def self.me(access_token, property_keys = [], secure_resource = false, user_id = 0)
+  # https://developers.kakao.com/docs/restapi/user-management#앱-연결-해제
+  def self.unlink_with_admin(admin_key, user_id)
+    authorization = "KakaoAK #{admin_key}"
+
+    request_url = "#{HOST_KAPI}/v1/user/unlink"
+    params = { target_id_type: 'user_id', target_id: user_id }
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  def self.me(access_token, property_keys = [], secure_resource = false)
     authorization = "Bearer #{access_token}"
     params = {
       propertyKeys: property_keys,
       secure_resource: secure_resource
     }
-    if user_id > 0
-      params[:target_id_type] = 'user_id'
-      params[:target_id] = user_id
-    end
+
+    request_url = "#{HOST_KAPI}/v1/user/me"
+    RestClient.post(request_url, params, Authorization: authorization)
+  end
+
+  # https://developers.kakao.com/docs/restapi/user-management#사용자-정보-요청
+  def self.me_with_admin(admin_key, user_id, property_keys = [], secure_resource = false)
+    authorization = "KakaoAK #{admin_key}"
+    params = {
+      target_id_type: 'user_id',
+      target_id: user_id,
+      propertyKeys: property_keys,
+      secure_resource: secure_resource,
+    }
 
     request_url = "#{HOST_KAPI}/v1/user/me"
     RestClient.post(request_url, params, Authorization: authorization)
@@ -53,12 +72,10 @@ class KakaoUser
 
   def self.ids(admin_key, limit = 100, from_id = 0, order = 'asc')
     authorization = "KakaoAK #{admin_key}"
-    params = {}
-    params[:limit] = limit
-    params[:from_id] = from_id if from_id > 0
-    params[:order] = order
-
-    request_url = "#{HOST_KAPI}/v1/user/ids?#{params.map{|k,v| "#{k}=#{v}"} * '&' }"
+    params = { limit: limit, order: order }
+    params[:from_id] = from_id if from_id.positive?
+l
+    request_url = "#{HOST_KAPI}/v1/user/ids?#{params.map { |k, v| "#{k}=#{v}" } * '&'}"
     RestClient.get(request_url, Authorization: authorization)
   end
 
